@@ -13,7 +13,7 @@ from skimage.io import imread
 def norm_hist(ima):
     histogram, bin_edges = np.histogram(
         # histogram range changed to remove 'garbage' low light values
-        ima.flatten(), bins=256, range=(25, 256)
+        ima.flatten(), bins=256, range=(35, 256)
     )
     return 1. * histogram / np.sum(histogram)
 
@@ -46,10 +46,10 @@ mri = img_as_ubyte(imread(str(sys.argv[1]), as_gray=True))
 
 # a basic gray value segmentation is made based on the optimal threshold
 t = optimal_threshold(norm_hist(mri), 150)
-seg = mri > t + 25  # threshold value is shifted to take into account initial low value removal
+seg = mri > t + (1-t/255)*35  # threshold value is shifted to take into account initial low value removal
 # morphological transforms are used to refine the result
-seg = cv.morphologyEx(seg.astype('uint8'), cv.MORPH_CLOSE, np.ones((9, 9), np.uint8))  # close areas
-seg = cv.morphologyEx(seg.astype('uint8'), cv.MORPH_OPEN, np.ones((13, 13), np.uint8))  # remove small/non-desired
+seg = cv.morphologyEx(seg.astype('uint8'), cv.MORPH_CLOSE, np.ones((5, 5), np.uint8))  # close areas
+seg = cv.morphologyEx(seg.astype('uint8'), cv.MORPH_OPEN, np.ones((11, 11), np.uint8))  # remove small/non-desired
 # shows the original MRI with the detected tumour highlighted on it
 plt.figure()
 plt.imshow(mri, cmap=cm.gray)
