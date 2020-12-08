@@ -38,7 +38,7 @@ def optimal_threshold(h, t):
 def _score(img):
     detected = np.nonzero(img)
     # every pixel corresponds to 0.013225 cm² of tumor area
-    score = 0.013225 * np.size(detected)
+    score = 0.013225 * np.size(detected)/np.ndim(detected)
     print("The measured area of the tumor is approximately of %.2f cm²" % score)
 
 
